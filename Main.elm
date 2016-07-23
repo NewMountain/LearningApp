@@ -30,10 +30,13 @@ update : Msg -> Model -> Model
 update msg model =
     case msg of
         AddCalorie ->
-            { model | total = model.total + model.inputValue }
+            { model
+                | total = model.total + model.inputValue
+                , inputValue = 0
+            }
 
         Clear ->
-            { model | total = 0 }
+            { model | total = 0, inputValue = 0 }
 
         Change num ->
             case (String.toInt num) of
@@ -41,7 +44,7 @@ update msg model =
                     { model | inputValue = val }
 
                 Err _ ->
-                    model
+                    { model | inputValue = 0 }
 
 
 view : Model -> Html Msg
@@ -51,8 +54,17 @@ view model =
             []
             [ text ("Total Calories: " ++ toString model.total) ]
         , input
-            [ placeholder "Enter Calories here: ", onInput Change ]
+            [ placeholder "Enter Calories here: "
+            , onInput Change
+            , value
+                (if model.inputValue == 0 then
+                    ""
+                 else
+                    toString model.inputValue
+                )
+            ]
             []
+        , br [] []
         , button
             [ type' "button", onClick AddCalorie ]
             [ text "Add" ]
